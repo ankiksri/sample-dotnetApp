@@ -20,10 +20,7 @@ steps:
     SonarQube: 'SonarCloud'
     projectKey: ed284c0b5e389c7369fff701685ea0abdbe917f7
     projectName: Sample-dotnetApp
-    projectVersion: '$(AssemblyVersion)'
-    extraProperties: |
-     sonar.organization=alkampfergit-github
-     sonar.branch.name=$(Build.SourceBranchName)
+    projectVersion: '$(AssemblyVersion)
  
 
 - task: DotNetCoreInstaller@0
