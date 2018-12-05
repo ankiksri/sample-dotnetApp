@@ -6,12 +6,16 @@ pool:
   
 variables:
   buildConfiguration: 'Release'
+   buildId: "1$(Build.BuildId)"
 
 steps:
 - script: |
     dotnet build --configuration $(buildConfiguration)
     dotnet test dotnetcore-tests --configuration $(buildConfiguration) --logger trx
     dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+    echo "BuildId = $(buildId)"
+    dotnet tool install --global dotnet-sonarscanner
+    
     
  - task: SonarSource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@4
   displayName: 'Prepare analysis on SonarQube'
@@ -22,6 +26,7 @@ steps:
     projectVersion: 1.0
     extraProperties: |
      sonar.organization=ankiksri
+     sonar.branch.name=master
      
 - task: DotNetCoreInstaller@0
   inputs:
