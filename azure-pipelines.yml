@@ -12,10 +12,24 @@ steps:
     dotnet build --configuration $(buildConfiguration)
     dotnet test dotnetcore-tests --configuration $(buildConfiguration) --logger trx
     dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+    
+    
+- task: SonarSource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@4
+  displayName: 'SonarQube Analysis started'
+  inputs:
+    SonarQube: 'SonarCloud'
+    projectKey: ed284c0b5e389c7369fff701685ea0abdbe917f7
+    projectName: Sample-dotnetApp
+    projectVersion: '$(AssemblyVersion)'
+    extraProperties: |
+     sonar.organization=alkampfergit-github
+     sonar.branch.name=$(Build.SourceBranchName)
+ 
 
 - task: DotNetCoreInstaller@0
   inputs:
     version: '2.1.300' # replace this value with the version that you need for your project
+    
     
 - task: DotNetCoreCLI@2
   inputs:
