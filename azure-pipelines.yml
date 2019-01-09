@@ -6,6 +6,8 @@ pool:
   
 variables:
   buildConfiguration: 'Release'
+  
+  #abcd
    
 
 steps:
