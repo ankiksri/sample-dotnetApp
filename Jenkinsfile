@@ -56,11 +56,11 @@ def PROXY_URL
    
 node
 {
-   stage('Checkout')
-   {
-        dir('./')
-        
-   }
+    stage('Checkout')
+    {
+        readProperties()
+        checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions:[], submoduleCfg: [], userRemoteConfigs: [[url: "${GIT_SOURCE_URL}"]]])
+    }
    
    withCredentials([usernamePassword(credentialsId: "${SCR_CREDENTIALS}", usernameVariable: 'username', passwordVariable: 'password')])
    {
