@@ -68,7 +68,7 @@ node
         }
    }
    
-node('dotnet') 
+node
 {
    stage('Checkout')
    {
