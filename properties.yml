@@ -1,4 +1,4 @@
-APP_NAME: 'icndpdemo'
+APP_NAME: 'demo-node'
 MS_NAME: 'coverage'
 BRANCH: 'master'
 GIT_SOURCE_URL: 'https://github.com/Umang2608/sample-dotnetApp.git'
