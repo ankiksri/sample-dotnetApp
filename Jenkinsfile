@@ -61,7 +61,7 @@ node
    stage('Read properties')
    {
        readProperties()
-       checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [url: "${GIT_SOURCE_URL}"]]])
+       checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [url: "${GIT_SOURCE_URL}"]])
        dir('./')
         {
             stash name : 'checkout' , includes : '**'
