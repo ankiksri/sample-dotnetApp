@@ -62,7 +62,7 @@ node
         checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions:[], submoduleCfg: [], userRemoteConfigs: [[url: "${GIT_SOURCE_URL}"]]])
     }
    
-   withCredentials([usernamePassword(credentialsId: "${SCR_CREDENTIALS}", usernameVariable: 'username', passwordVariable: 'password')])
+  
    {
         PROXY_URL="http://$username:$password@10.68.248.34:80"
     }    
