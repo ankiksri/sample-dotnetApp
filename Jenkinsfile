@@ -61,12 +61,6 @@ node
         readProperties()
         checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions:[], submoduleCfg: [], userRemoteConfigs: [[url: "${GIT_SOURCE_URL}"]]])
     }
-   
-  
-   {
-        PROXY_URL="http://$username:$password@10.68.248.34:80"
-    }    
-       withEnv(["http_proxy=${PROXY_URL}","https_proxy=${PROXY_URL}"]) 
        {
         	   stage('Initial Setup')
         	   {
