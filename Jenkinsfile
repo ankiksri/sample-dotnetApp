@@ -54,7 +54,7 @@ podTemplate(cloud:'openshift',label: 'docker',
 def PROXY_URL
 
    
-node('dotnet') 
+node
 {
    stage('Checkout')
    {
