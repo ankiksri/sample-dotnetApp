@@ -1,7 +1,7 @@
 APP_NAME: 'icndpdemo'
 MS_NAME: 'coverage'
 BRANCH: 'master'
-GIT_SOURCE_URL: 'https://infygit.ad.infosys.com/manya.tripathi/coverage.git'
+GIT_SOURCE_URL: 'https://github.com/Umang2608/sample-dotnetApp.git'
 SCR_CREDENTIALS: 'SCR_CRED'
 SONAR_HOST_URL: 'http://sonarqube-icndpdemo-devops.apps.admcoepaas.local'
 DOCKER_REGISTRY: 'https://blrocpimpregistry:5000'
