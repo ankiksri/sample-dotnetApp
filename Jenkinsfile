@@ -59,9 +59,7 @@ node
    stage('Checkout')
    {
         dir('./')
-        {
-            unstash name : 'checkout'
-        }
+        
    }
    
    withCredentials([usernamePassword(credentialsId: "${SCR_CREDENTIALS}", usernameVariable: 'username', passwordVariable: 'password')])
