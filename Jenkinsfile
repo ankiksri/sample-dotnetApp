@@ -56,6 +56,7 @@ def PROXY_URL
    
 node
 {
+	def owasp_sca = tool "owasp_sca"
 	env.PATH="${env.PATH}:${owasp_sca}/bin"
     stage('Checkout')
     {
