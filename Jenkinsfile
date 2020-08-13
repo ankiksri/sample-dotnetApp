@@ -52,21 +52,7 @@ podTemplate(cloud:'openshift',label: 'docker',
     )],volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),hostPathVolume(hostPath: '/etc/docker/daemon.json', mountPath: '/etc/docker/daemon.json')] )
 {
 def PROXY_URL
-node 
-{
 
-    def owasp_sca = tool "owasp_sca"
-   env.PATH="${env.PATH}:${owasp_sca}/bin"
-
-   stage('Read properties')
-   {
-       readProperties()
-       checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${SCR_CREDENTIALS}", url: "${GIT_SOURCE_URL}"]]])
-       dir('./')
-        {
-            stash name : 'checkout' , includes : '**'
-        }
-   }
    
 node('dotnet') 
 {
