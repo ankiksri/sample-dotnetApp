@@ -52,17 +52,37 @@ podTemplate(cloud:'openshift',label: 'docker',
     )],volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),hostPathVolume(hostPath: '/etc/docker/daemon.json', mountPath: '/etc/docker/daemon.json')] )
 {
 def PROXY_URL
-
-   
-node
+node 
 {
-	def owasp_sca = tool "owasp_sca"
-	env.PATH="${env.PATH}:${owasp_sca}/bin"
-    stage('Checkout')
-    {
-        readProperties()
-        checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions:[], submoduleCfg: [], userRemoteConfigs: [[url: "${GIT_SOURCE_URL}"]]])
-    }
+
+    def owasp_sca = tool "owasp_sca"
+   env.PATH="${env.PATH}:${owasp_sca}/bin"
+
+   stage('Read properties')
+   {
+       readProperties()
+       checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${SCR_CREDENTIALS}", url: "${GIT_SOURCE_URL}"]]])
+       dir('./')
+        {
+            stash name : 'checkout' , includes : '**'
+        }
+   }
+   
+node('dotnet') 
+{
+   stage('Checkout')
+   {
+        dir('./')
+        {
+            unstash name : 'checkout'
+        }
+   }
+   
+  
+   {
+        PROXY_URL="http://$username:$password@10.68.248.34:80"
+    }    
+       withEnv(["http_proxy=${PROXY_URL}","https_proxy=${PROXY_URL}"]) 
        {
         	   stage('Initial Setup')
         	   {
