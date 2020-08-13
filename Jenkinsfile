@@ -56,6 +56,7 @@ def PROXY_URL
    
 node
 {
+	env.PATH="${env.PATH}:${owasp_sca}/bin"
     stage('Checkout')
     {
         readProperties()
