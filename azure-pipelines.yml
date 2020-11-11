@@ -40,7 +40,7 @@ stages:
   
     # Restore dependencies
     - task: DotNetCoreCLI@2
-      displayName: 'mvn restore'
+      displayName: 'restore'
       inputs:
         command: restore
         projects: '**/*.csproj'
@@ -57,7 +57,7 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:
-        command: mvn test
+        command:  test
         projects: '**/*UnitTests/*.csproj'
         arguments: '--configuration $(BuildConfiguration)'
 
@@ -65,7 +65,7 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: 'dotnet publish'
       inputs:
-        command: mvn publish
+        command: publish
         publishWebProjects: True
         arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)/PublishedWebApp'
         zipAfterPublish: false
