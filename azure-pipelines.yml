@@ -1,4 +1,9 @@
 # Build ASP.NET Core project using Azure Pipelines
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
 
 pool:
@@ -34,7 +39,7 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-- task: PublishBuildArtifacts@1
+#- task: PublishBuildArtifacts@1
 
 - task: DotNetCoreCLI@2
   inputs:
