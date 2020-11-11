@@ -1,50 +1,140 @@
-# Build ASP.NET Core project using Azure Pipelines
-
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
-
-pool:
-  vmImage: 'vs2017-win2016'
-  
+trigger:
+  branches:
+    include: 
+    - master
 variables:
   buildConfiguration: 'Release'
+  location: 'West US 2'
+  acrHostName: 'cswebappdocker004acr.azurecr.io'
+  acrName: 'cswebappdocker004acr'
+  rgName: 'cswebappdocker004-rg'
+  imageName: 'cswebappdocker004'
+  webAppName: 'cswebappdocker004'
+
+stages:
+
+# Build Stage
+- stage: BuildAndTest
+  jobs:
+  - job: BuildAndTest
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+
+    # Create or update the ACR resource
+    - task: AzureResourceGroupDeployment@2
+      displayName: 'Azure Deployment:Create Azure Container Registry'
+      inputs:
+        azureSubscription: 'AzureSC'
+        resourceGroupName: '$(rgName)'
+        location: $(location)
+        csmFile: '$(System.DefaultWorkingDirectory)/**/containerRegistry-template.json'
+        overrideParameters: '-registryName "$(acrName)" -registryLocation "$(location)" -registrySku standard'
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk'
+      inputs:
+        packageType: sdk
+        version: 2.2.x
+        installationPath: $(Agent.ToolsDirectory)/dotnet        
   
-  #abcd
-   
+    # Restore dependencies
+    - task: DotNetCoreCLI@2
+      displayName: 'mvn restore'
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
 
-steps:
-  - script: |
-      dotnet build --configuration $(buildConfiguration)
-      dotnet test dotnetcore-tests --configuration $(buildConfiguration) --logger trx
-      dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
-      
-  - task: DotNetCoreInstaller@0
-    inputs:
-      version: '2.1.300' # replace this value with the version that you need for your project
-      
-      
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*Tests/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-      
-      
-  # - script: dotnet test sample-dotnetApp --logger trx --collect "Code coverage"
-  - task: PublishTestResults@2
-    inputs:
-      testRunner: VSTest
-      testResultsFiles: '**/*.trx'
+    # Build app
+    - task: DotNetCoreCLI@2
+      displayName: 'mvn build'
+      inputs:
+        command: build
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
 
-  #- task: PublishBuildArtifacts@1
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'drop'
-      publishLocation: 'Container'
+    # Run unit tests
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: mvn test
+        projects: '**/*UnitTests/*.csproj'
+        arguments: '--configuration $(BuildConfiguration)'
 
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: publish
-      publishWebProjects: True
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-      zipAfterPublish: True
+    # Publish the app
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet publish'
+      inputs:
+        command: mvn publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)/PublishedWebApp'
+        zipAfterPublish: false
+
+    # Build container image
+    - task: Docker@1
+      displayName: 'Build container image'
+      inputs:
+        azureSubscriptionEndpoint: 'AzureSC'
+        azureContainerRegistry: '$(acrHostName)'
+        imageName: '$(imageName):$(Build.BuildId)'
+        useDefaultContext: false
+        buildContext: '$(System.DefaultWorkingDirectory)/PublishedWebApp'
+
+    # Push container image
+    - task: Docker@1
+      displayName: 'Push container image'
+      inputs:
+        azureSubscriptionEndpoint: 'AzureSC'
+        azureContainerRegistry: '$(acrHostName)'
+        command: 'Push an image'
+        imageName: '$(imageName):$(Build.BuildId)'
+
+    # Copy ARM templates
+    - task: CopyFiles@2
+      displayName: 'Copy ARM templates'
+      inputs:
+        SourceFolder: ArmTemplates
+        TargetFolder: '$(build.artifactstagingdirectory)'
+
+    # Publish the app as an artifact
+    - publish: $(Build.StagingDirectory)
+      artifact: app
+
+# Staging release
+- stage: Staging
+  jobs:
+  - job: Release
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+    # Don't clone the repo
+    - checkout: none
+
+    # Download the published application artifact
+    - download: current
+      artifact: app
+
+    # Create or update Azure App Service
+    - task: AzureResourceGroupDeployment@2
+      displayName: 'Azure Deployment:Create Azure App Service'
+      inputs:
+        azureSubscription: 'AzureSC'
+        resourceGroupName: '$(rgName)'
+        location: '$(location)'
+        csmFile: '$(Pipeline.Workspace)/**/container-webapp-template.json'
+        overrideParameters: '-webAppName $(webAppName) -hostingPlanName $(webAppName) -appInsightsLocation "$(location)" -sku "S1 Standard" -registryName $(acrName) -registryLocation "$(location)" -registrySku standard -imageName $(imageName):$(Build.BuildId)'
+
+    # Deploy App Service
+    - task: AzureRmWebAppDeployment@3
+      displayName: 'Deploy Azure App Service'
+      inputs:
+        azureSubscription: 'AzureSC'
+        appType: applinux
+        WebAppName: $(webAppName)
+        DockerNamespace: $(acrHostName)
+        DockerRepository: $(webAppName)
+        DockerImageTag: '$(Build.BuildId)'
+        WebAppUri: webAppUrl
+        TakeAppOfflineFlag: true
+        UseWebDeploy: true
+        RenameFilesFlag: true
