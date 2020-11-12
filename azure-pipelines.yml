@@ -22,15 +22,7 @@ stages:
     steps:
 
     # Create or update the ACR resource
-    - task: AzureResourceGroupDeployment@2
-      displayName: 'Azure Deployment:Create Azure Container Registry'
-      inputs:
-        azureSubscription: 'AzureSC'
-        resourceGroupName: '$(rgName)'
-        location: $(location)
-        csmFile: '$(System.DefaultWorkingDirectory)/**/containerRegistry-template.json'
-        overrideParameters: '-registryName "$(acrName)" -registryLocation "$(location)" -registrySku standard'
-
+    
     - task: UseDotNet@2
       displayName: 'Use .NET Core sdk'
       inputs:
