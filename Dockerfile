@@ -5,11 +5,10 @@
 
 # Create a container with the compiled asp.net core app
 FROM microsoft/aspnetcore:2.0
-
+RUN echo "hello world"
 # Create app directory
 WORKDIR /app
 
 # Copy files from the artifact staging folder on agent
-COPY dotnetcore-sample/out .
-
+COPY . /app
 ENTRYPOINT ["dotnet", "dotnetcore-sample.dll"]
