@@ -66,8 +66,8 @@ stages:
     - task: Docker@1
       displayName: 'Build container image'
       inputs:
-        azureSubscriptionEndpoint: 'AzureSC'
-        azureContainerRegistry: '$(acrHostName)'
+        
+        
         imageName: '$(imageName):$(Build.BuildId)'
         useDefaultContext: false
         buildContext: '$(System.DefaultWorkingDirectory)/PublishedWebApp'
@@ -76,8 +76,7 @@ stages:
     - task: Docker@1
       displayName: 'Push container image'
       inputs:
-        azureSubscriptionEndpoint: 'AzureSC'
-        azureContainerRegistry: '$(acrHostName)'
+        
         command: 'Push an image'
         imageName: '$(imageName):$(Build.BuildId)'
 
@@ -107,26 +106,6 @@ stages:
       artifact: app
 
     # Create or update Azure App Service
-    - task: AzureResourceGroupDeployment@2
-      displayName: 'Azure Deployment:Create Azure App Service'
-      inputs:
-        azureSubscription: 'AzureSC'
-        resourceGroupName: '$(rgName)'
-        location: '$(location)'
-        csmFile: '$(Pipeline.Workspace)/**/container-webapp-template.json'
-        overrideParameters: '-webAppName $(webAppName) -hostingPlanName $(webAppName) -appInsightsLocation "$(location)" -sku "S1 Standard" -registryName $(acrName) -registryLocation "$(location)" -registrySku standard -imageName $(imageName):$(Build.BuildId)'
-
+   
     # Deploy App Service
-    - task: AzureRmWebAppDeployment@3
-      displayName: 'Deploy Azure App Service'
-      inputs:
-        azureSubscription: 'AzureSC'
-        appType: applinux
-        WebAppName: $(webAppName)
-        DockerNamespace: $(acrHostName)
-        DockerRepository: $(webAppName)
-        DockerImageTag: '$(Build.BuildId)'
-        WebAppUri: webAppUrl
-        TakeAppOfflineFlag: true
-        UseWebDeploy: true
-        RenameFilesFlag: true
+    
