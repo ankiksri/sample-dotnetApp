@@ -62,24 +62,13 @@ stages:
         arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)/PublishedWebApp'
         zipAfterPublish: false
 
-    # Build container image
-    - task: Docker@1
-      displayName: 'Build container image'
+    - task: Docker@2
       inputs:
-        
-        
-        imageName: '$(imageName):$(Build.BuildId)'
-        useDefaultContext: false
-        buildContext: '$(System.DefaultWorkingDirectory)/PublishedWebApp'
-
-    # Push container image
-    -  task: Docker@2
-       inputs:
         containerRegistry: 'dockerhub'
         repository: 'azure'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
-
+        
     # Copy ARM templates
     - task: CopyFiles@2
       displayName: 'Copy ARM templates'
