@@ -11,4 +11,4 @@ RUN echo "hello world 1"
 # Copy files from the artifact staging folder on agent
 COPY . /app
 RUN echo "hello world 2"
-ENTRYPOINT ["dotnet"]
+ENTRYPOINT ["dotnet","dotnetcore-sample.dll"]
