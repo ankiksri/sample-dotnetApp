@@ -67,7 +67,7 @@ stages:
         containerRegistry: 'dockerhub'
         repository: 'azure'
         command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
+        
         
     # Copy ARM templates
     - task: CopyFiles@2
