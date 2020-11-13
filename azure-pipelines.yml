@@ -61,23 +61,19 @@ stages:
         publishWebProjects: True
         arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)/PublishedWebApp'
         zipAfterPublish: false
-    - task: ContainerBuild@0
-      inputs:
-        dockerRegistryServiceConnection: 'dockerhub'
-        repository: 'azure'
-        Dockerfile: 'Dockerfile'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'dockerhub'
-        repository: 'azure'
-        command: 'build'
-        Dockerfile: '**/Dockerfile'
+    
+   
 
     - task: Docker@2
+      displayName: Login to Docker Hub
       inputs:
-        containerRegistry: 'dockerhub'
-        repository: 'azure'
-        command: 'Push'
+        command: login
+        containerRegistry: dockerRegistryServiceConnection2
+    - task: Docker@2
+      displayName: Build and Push
+      inputs:
+        command: buildAndPush
+        repository: contosoRepository
         
         
     # Copy ARM templates
