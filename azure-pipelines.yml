@@ -64,16 +64,12 @@ stages:
     
    
 
-    - task: Docker@2
-      displayName: Login to Docker Hub
-      inputs:
-        command: login
-        containerRegistry: dockerhub
+   
     - task: Docker@2
       displayName: Build and Push
       inputs:
         command: buildAndPush
-        repository: contosoRepository
+        repository: azure
         
         
     # Copy ARM templates
