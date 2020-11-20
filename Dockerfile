@@ -11,8 +11,6 @@ WORKDIR /app
 #RUN echo "hello world 1"
 # Copy files from the artifact staging folder on agent
 COPY . /app
-#RUN dotnet restore
-RUN dotnet build -c Release
-RUN dotnet publish -c Release -o out
+
 RUN echo "hello world 2"
 #ENTRYPOINT ["dotnet","dotnetcore-sample.dll"]
