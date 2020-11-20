@@ -39,7 +39,7 @@ stages:
 
     # Build app
     - task: DotNetCoreCLI@2
-      displayName: 'mvn build'
+      displayName: 'dotnet build'
       inputs:
         command: build
         projects: '**/*.csproj'
