@@ -69,7 +69,7 @@ stages:
       displayName: Build and Push
       inputs:
         command: buildAndPush
-        repository: umang2608/azure
+        repository: azure
         
         
     # Copy ARM templates
