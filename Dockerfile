@@ -7,7 +7,7 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
 
 # Create app directory
-WORKDIR /app
+WORKDIR /docker
 
 # Copy files from the artifact staging folder on agent
 COPY . /app
