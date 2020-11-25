@@ -79,7 +79,7 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: 'azure'
-        repository: 'azure'
+        repository: 'umang2608/azure'
         command: 'push'
         
         
