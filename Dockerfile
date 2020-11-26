@@ -13,4 +13,5 @@ WORKDIR /docker
 COPY . /app
 
 RUN echo "hello world 2"
+CMD ["/docker/azure"]
 ENTRYPOINT ["dotnet","dotnetcore-sample.dll"]
