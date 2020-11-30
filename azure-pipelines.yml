@@ -80,7 +80,7 @@ stages:
       displayName: Push image
       inputs:
         containerRegistry: |
-          $(dockerHub)
+          $(azure)
         repository: $(imageName)
         command: push
         
